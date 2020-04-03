@@ -8,6 +8,11 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 module.exports = {
   mode: "development",
   devtool: "eval-source-map",
+  devServer: {
+    proxy: {
+      "/": "http://localhost:3003",
+    },
+  },
   module: {
     rules: [
       {
