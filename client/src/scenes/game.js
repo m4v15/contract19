@@ -11,15 +11,15 @@ import deck from "../assets/deck.json";
 export default class Game extends Phaser.Scene {
   constructor() {
     super({
-      key: "Game"
+      key: "Game",
     });
   }
 
   preload() {
-    this.load.html("nameform", "assets/nameform.html");
-    this.load.html("numberform", "assets/numberform.html");
-    deck.forEach(card => {
-      this.load.image(card, `assets/cards/${card}.png`);
+    this.load.html("nameform", "./assets/nameform.html");
+    this.load.html("numberform", "./assets/numberform.html");
+    deck.forEach((card) => {
+      this.load.image(card, `./assets/cards/${card}.png`);
     });
   }
 
@@ -31,7 +31,7 @@ export default class Game extends Phaser.Scene {
 
     this.socket = io("https://covid-19-down.herokuapp.com/");
 
-    this.socket.on("connect", function() {
+    this.socket.on("connect", function () {
       console.log("Connected with id: " + self.socket.id);
       self.player.id = self.socket.id;
     });
@@ -55,30 +55,30 @@ export default class Game extends Phaser.Scene {
       .setColor("#cccccc")
       .setInteractive();
 
-    this.dealText.on("pointerdown", function() {
+    this.dealText.on("pointerdown", function () {
       self.socket.emit("redeal");
       self.round.render("numberform");
     });
 
-    this.dealText.on("pointerover", function() {
+    this.dealText.on("pointerover", function () {
       self.dealText.setColor("#ff69b4");
     });
 
-    this.dealText.on("pointerout", function() {
+    this.dealText.on("pointerout", function () {
       self.dealText.setColor("#00ffff");
     });
 
-    this.input.on("drag", function(pointer, gameObject, dragX, dragY) {
+    this.input.on("drag", function (pointer, gameObject, dragX, dragY) {
       gameObject.x = dragX;
       gameObject.y = dragY;
     });
 
-    this.input.on("dragstart", function(pointer, gameObject) {
+    this.input.on("dragstart", function (pointer, gameObject) {
       gameObject.setTint(0xff69b4);
       self.children.bringToTop(gameObject);
     });
 
-    this.input.on("dragend", function(pointer, gameObject, dropped) {
+    this.input.on("dragend", function (pointer, gameObject, dropped) {
       gameObject.setTint();
       const dragStartX = gameObject.input.dragStartX;
       const dragStartY = gameObject.input.dragStartY;
@@ -88,7 +88,7 @@ export default class Game extends Phaser.Scene {
       }
     });
 
-    this.input.on("drop", function(pointer, gameObject, dropZone) {
+    this.input.on("drop", function (pointer, gameObject, dropZone) {
       let sprite = gameObject.texture.key;
       self.dropZone.data.values.cards.push(sprite);
       gameObject.x =
@@ -126,31 +126,31 @@ export default class Game extends Phaser.Scene {
       {
         color: "white",
 
-        fontSize: "20px "
+        fontSize: "20px ",
       }
     );
 
-    this.socket.on("players", function(players) {
+    this.socket.on("players", function (players) {
       var playersString = "Players --- Tricks Won this round:\n";
       self.players = players;
-      self.players.forEach(player => {
+      self.players.forEach((player) => {
         playersString += player.name + " --- " + player.tricks + "\n";
       });
       scores.setText(playersString, {
         color: "white",
 
-        fontSize: "20px "
+        fontSize: "20px ",
       });
     });
 
-    this.socket.on("dealCards", function(hand) {
+    this.socket.on("dealCards", function (hand) {
       self.dealer.dealCards(hand);
       self.allCards = [...self.allCards, ...hand];
       self.dropZone.data.values.cards = [];
       // self.dealText.disableInteractive();
     });
 
-    this.socket.on("trumps", function(sprite) {
+    this.socket.on("trumps", function (sprite) {
       self.allCards.push(sprite);
       let card = new Card(self);
       card
@@ -159,13 +159,13 @@ export default class Game extends Phaser.Scene {
         .disableInteractive();
     });
 
-    this.socket.on("cardPlayed", function(gameObject, playerId) {
+    this.socket.on("cardPlayed", function (gameObject, playerId) {
       let sprite = gameObject.textureKey;
       self.cardsPlayed.push(sprite);
       self.allCards.push(sprite);
       if (playerId !== self.player.id) {
         self.dropZone.data.values.cards.push(sprite);
-        const player = self.players.find(player => player.id === playerId);
+        const player = self.players.find((player) => player.id === playerId);
         let playerName;
         if (player) playerName = player.name;
         let card = new Card(self);
@@ -202,19 +202,19 @@ export default class Game extends Phaser.Scene {
       .setColor("#cccccc")
       .setInteractive();
 
-    this.claimText.on("pointerdown", function() {
+    this.claimText.on("pointerdown", function () {
       self.player.tricks++;
       self.socket.emit("claimTrick", self.player);
     });
 
-    this.socket.on("trickClaimed", function() {
-      self.cardsPlayed.forEach(sprite => {
+    this.socket.on("trickClaimed", function () {
+      self.cardsPlayed.forEach((sprite) => {
         const cardObject = self.children.getByName(sprite);
         if (cardObject) {
           cardObject.destroy();
         }
       });
-      self.players.forEach(player => {
+      self.players.forEach((player) => {
         const name = self.children.getByName(player.name);
         if (name) {
           name.destroy();
@@ -224,15 +224,15 @@ export default class Game extends Phaser.Scene {
       self.dropZone.data.values.cards = [];
     });
 
-    this.socket.on("redeal", function() {
-      self.allCards.forEach(sprite => {
+    this.socket.on("redeal", function () {
+      self.allCards.forEach((sprite) => {
         const cardObject = self.children.getByName(sprite);
         if (cardObject) {
           cardObject.destroy();
         }
       });
       self.cardsPlayed = [];
-      self.cardsPlayed.forEach(sprite => {
+      self.cardsPlayed.forEach((sprite) => {
         const cardObject = self.children.getByName(sprite);
         if (cardObject) {
           cardObject.destroy();
@@ -241,11 +241,11 @@ export default class Game extends Phaser.Scene {
       self.cardsPlayed = [];
     });
 
-    this.claimText.on("pointerover", function() {
+    this.claimText.on("pointerover", function () {
       self.claimText.setColor("#ff69b4");
     });
 
-    this.claimText.on("pointerout", function() {
+    this.claimText.on("pointerout", function () {
       self.claimText.setColor("#00ffff");
     });
   }
