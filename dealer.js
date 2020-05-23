@@ -19,7 +19,7 @@ const deal = (cards, players) => {
     });
   }
 
-  const hands = playerHands.map((hand) => {
+  const hands = playerCards.map((hand) => {
     hand.sort(function (a, b) {
       return JSONdeck.indexOf(a) - JSONdeck.indexOf(b);
     });
