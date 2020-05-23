@@ -1,6 +1,6 @@
 JSONdeck = require("./deck.json");
 
-const shuffle = freshDeck => {
+const shuffle = (freshDeck) => {
   const deck = [...freshDeck];
   for (let i = deck.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -13,16 +13,16 @@ const deal = (cards, players) => {
   const shuffled = shuffle(JSONdeck);
   playerCards = Array.apply(null, Array(players)).map(() => []);
   for (let i = 0; i < cards; i++) {
-    playerCards.forEach(hand => {
+    playerCards.forEach((hand) => {
       const newCard = shuffled.shift();
       hand.push(newCard);
     });
   }
 
-  const hands = playerCards.map(hand => {
-    hand
-      .sort()
-      .sort((a, b) => a.charCodeAt(a.length - 1) - b.charCodeAt(b.length - 1));
+  const hands = playerHands.map((hand) => {
+    hand.sort(function (a, b) {
+      return JSONdeck.indexOf(a) - JSONdeck.indexOf(b);
+    });
     return hand;
   });
 
@@ -30,10 +30,10 @@ const deal = (cards, players) => {
   return {
     playerCards: hands,
     trumps,
-    remaining: shuffled
+    remaining: shuffled,
   };
 };
 
 module.exports = {
-  deal
+  deal,
 };
